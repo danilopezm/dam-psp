@@ -62,8 +62,6 @@ Sus funciones principales son:
 - Ejecutar programas de usuario.
 - Administrar procesos, memoria, dispositivos y comunicaciones.
 
-[Volver a Inicio](../README.md)
-
 ---
 
 ## 2. FORMAS DE EJECUCIÓN
@@ -144,8 +142,6 @@ El procesador dispone de dos modos de funcionamiento:
 |---|---|
 | **Modo kernel** | También llamado modo supervisor o privilegiado. Permite operaciones protegidas del sistema operativo. |
 | **Modo usuario** | Se utiliza para ejecutar programas de usuario con restricciones de seguridad. |
-
-Volver al índice
 
 ---
 
@@ -254,8 +250,6 @@ El contexto incluye:
 
 > El cambio de contexto consume tiempo. Durante ese periodo, el procesador no realiza trabajo útil para los procesos de usuario.
 
-[Volver a Inicio](../README.md)
-
 ---
 
 ## 8. GESTIÓN DE PROCESOS
@@ -343,8 +337,6 @@ int codigoRetorno = proceso.waitFor();
 - Por convenio, `0` suele indicar que el proceso ha terminado correctamente.
 - El código de retorno no representa los mensajes transmitidos mediante streams.
 
-[Volver a Inicio](../README.md)
-
 ---
 
 ## 10. ENTRADA, SALIDA Y STREAMS
@@ -417,8 +409,6 @@ Comunicación
     ▼
 Sincronización
 ```
-
-[Volver a Inicio](../README.md)
 
 ---
 
@@ -535,8 +525,6 @@ PROGRAMACIÓN DE SERVICIOS Y PROCESOS
     ├── Partición
     └── Implementación
 ```
-
-[Volver a Inicio](../README.md)
 
 ---
 

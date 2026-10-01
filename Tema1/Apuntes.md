@@ -442,7 +442,7 @@ Un proceso recibe datos, los transforma y genera resultados:
 ```text
 Entrada ──► Proceso ──► Salida
 ```
-<br>
+
 | Canal | Nombre | Función habitual |
 |---|---|---|
 | Entrada estándar | `stdin` | Recibe datos, normalmente desde el teclado. |

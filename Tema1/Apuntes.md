@@ -240,11 +240,7 @@ El sistema operativo organiza los procesos en distintas colas:
 
 #### 📝 Actividades
 
-> **Actividad 9. Colas en la vida real**.  
-> 
-> Elige dos tipos de colas que conozcas (por ejemplo, banco, urgencias, cafetería, etc.). Describe brevemente cómo se organiza cada una y compáralas con las *colas de procesos* de un sistema operativo, indicando semejanzas y diferencias.
-
-> **Actividad 10. Diseñar una política de cola**.  
+> **Actividad 8. Diseñar una política de cola**.  
 > 
 > Imagina que eres el sistema operativo y tienes tres procesos: uno de alarma (muy prioritario), uno de usuario (prioridad media) y una copia de seguridad (prioridad baja). Describe cómo organizarías las colas y en qué orden atenderías cada proceso, justificando tu decisión.
 
@@ -280,16 +276,17 @@ El planificador de largo plazo:
 
 #### 📝 Actividades
 
-> **Actividad 11. Tú eres el planificador**.  
+> **Actividad 9. Verdadero o falso**.
 > 
-> Tienes cuatro procesos con distintas duraciones y prioridades (corto/alta, largo/baja, etc.). Propón un orden de ejecución utilizando:  
-> - Un criterio basado en prioridad.  
-> - Un criterio de tiempo compartido (todos con la misma prioridad).  
-> Justifica brevemente cada decisión.
-
-> **Actividad 12. Planificación y experiencia de usuario**.  
+> Indica si las siguientes afirmaciones son verdaderas (V) o falsas (F).  
+> Cuando sea falsa, corrígela brevemente en una línea.
 > 
-> Describe una situación en la que hayas notado tu ordenador "lento". Explica, con tus palabras, qué podría estar ocurriendo con la planificación de procesos y cómo afectaría al usuario tener muchos procesos compitiendo por la CPU.
+> A) El planificador de corto plazo selecciona qué proceso de la cola de preparados pasa a ejecución.  
+> B) El planificador de largo plazo se activa cada pocos milisegundos para decidir qué proceso se ejecuta ahora.  
+> C) El planificador de largo plazo controla el grado de multiprogramación regulando cuántos procesos hay cargados en memoria.  
+> D) En la planificación sin desalojo, el sistema operativo puede quitar la CPU a un proceso si llega otro de mayor prioridad.  
+> E) En la planificación apropiativa, el sistema operativo puede retirar la CPU a un proceso antes de que termine.  
+> F) En la planificación por tiempo compartido, cada proceso usa la CPU durante un intervalo llamado *cuanto* antes de ceder el turno a otro proceso.
 
 [Volver a Inicio](../README.md)
 
@@ -316,13 +313,9 @@ El contexto incluye:
 
 #### 📝 Actividades
 
-> **Actividad 13. Cambiar de tarea en tu vida**.  
+> **Actividad 10. Representación del cambio de contexto**.  
 > 
-> Describe una situación en la que tengas que cambiar de una tarea a otra (por ejemplo, estudiar y atender una llamada). Explica qué información necesitas "guardar" mentalmente para poder retomar la primera tarea y relaciona esto con el concepto de *contexto de un proceso*.
-
-> **Actividad 14. Exceso de cambios de contexto**.  
-> 
-> Imagina un día en el que cambias constantemente de actividad (estudiar, móvil, redes, vídeos, etc.). Explica cómo afecta esto a tu productividad y relaciona esa situación con el coste del *cambio de contexto* en un ordenador.
+> Dibuja un diagrama que represente el proceso de cambio de contexto.
 
 ---
 
@@ -361,16 +354,9 @@ Esta operación elimina el proceso hijo y libera sus recursos en el sistema oper
 
 #### 📝 Actividades
 
-> **Actividad 15. Procesos padre e hijo**.  
+> **Actividad 11. Responde**.  
 > 
-> Elabora una analogía entre un proceso padre y un proceso hijo y una situación real (por ejemplo, un profesor que asigna una tarea a un alumno). Describe qué equivaldría a crear el proceso, a esperar su finalización y a terminarlo de forma abrupta.
-
-> **Actividad 16. Cuándo terminar un proceso**.  
-> 
-> Para cada una de las siguientes situaciones, indica si terminarías el proceso de forma normal o forzada y justifica brevemente tu respuesta:  
-> - Un programa que se ha quedado "colgado" y no responde.  
-> - Un programa que funciona correctamente.  
-> - Un programa que está realizando acciones maliciosas.
+> ¿Qué significa que padre e hijo pueden ejecutarse concurrentemente? 
 
 [Volver a Inicio](../README.md)
 
@@ -426,7 +412,7 @@ int codigoRetorno = proceso.waitFor();
 
 #### 📝 Actividades
 
-> **Actividad 17. Predicción de comportamiento**.  
+> **Actividad 12. Predicción de comportamiento**.  
 > 
 > A partir del siguiente fragmento de código:  
 > ```java
@@ -440,7 +426,7 @@ int codigoRetorno = proceso.waitFor();
 > - ¿En qué momento se muestra el mensaje por pantalla?  
 > - ¿Qué pasaría si se elimina la llamada a `waitFor()`?
 
-> **Actividad 18. Modificación de código**.  
+> **Actividad 13. Modificación de código**.  
 > 
 > Partiendo del ejemplo anterior, describe cómo modificarías el código para:  
 > - Ejecutar `calc.exe` en lugar de `notepad`.  
@@ -456,7 +442,7 @@ Un proceso recibe datos, los transforma y genera resultados:
 ```text
 Entrada ──► Proceso ──► Salida
 ```
-
+<br>
 | Canal | Nombre | Función habitual |
 |---|---|---|
 | Entrada estándar | `stdin` | Recibe datos, normalmente desde el teclado. |
@@ -475,14 +461,14 @@ Cuando Java crea un proceso hijo, el proceso padre se comunica con él mediante 
 
 #### 📝 Actividades
 
-> **Actividad 19. Identificación de canales**.  
+> **Actividad 14. Identificación de canales**.  
 > 
 > Para cada uno de los siguientes programas, indica qué usaría como `stdin`, `stdout` y `stderr`:  
 > - Una calculadora por consola que pide dos números y muestra el resultado.  
 > - Un compilador que muestra errores de sintaxis.  
 > - Un programa que lee un fichero y escribe el resultado en otro.
 
-> **Actividad 20. Redirección de salida**.  
+> **Actividad 15. Redirección de salida**.  
 > 
 > Investiga qué significan las siguientes órdenes en un sistema tipo Unix/Linux:  
 > ```bash
@@ -540,11 +526,11 @@ Sincronización
 
 #### 📝 Actividades
 
-> **Actividad 21. Esquema de comunicación**.  
+> **Actividad 16. Esquema de comunicación**.  
 > 
 > Dibuja un esquema sencillo en el que un proceso padre y un proceso hijo se comunican mediante flujos de datos. Etiqueta los canales (puedes usar `stdin`, `stdout`, `stderr` o simplemente "canal de datos") y describe brevemente qué tipo de información viajaría en cada sentido.
 
-> **Actividad 22. Sincronización con `waitFor()`**.  
+> **Actividad 17. Sincronización con `waitFor()`**.  
 > 
 > A partir del siguiente fragmento:  
 > ```java
@@ -602,7 +588,7 @@ Crear los procesos y programar los mecanismos necesarios de comunicación y sinc
 
 #### 📝 Actividades
 
-> **Actividad 23. División de una tarea en procesos**.  
+> **Actividad 18. División de una tarea en procesos**.  
 > 
 > Imagina una aplicación que:  
 > - Lee un fichero grande.  
@@ -610,7 +596,7 @@ Crear los procesos y programar los mecanismos necesarios de comunicación y sinc
 > - Guarda el resultado en otro fichero.  
 > Propón cómo dividirías esta tarea en varios procesos, qué haría cada uno y qué procesos necesitarían comunicarse entre sí.
 
-> **Actividad 24. Cuándo usar varios procesos**.  
+> **Actividad 19. Cuándo usar varios procesos**.  
 > 
 > Completa las siguientes frases con tus propias palabras:  
 > - Usar varios procesos tiene sentido cuando…  
@@ -711,7 +697,7 @@ PROGRAMACIÓN DE SERVICIOS Y PROCESOS
 
 #### 📝 Actividades
 
-> **Actividad 25. Autoevaluación**.  
+> **Actividad 20. Autoevaluación**.  
 > 
 > Responde brevemente (sí/no o con una frase) a las siguientes preguntas:  
 > - ¿Sabes explicar la diferencia entre programa y proceso?  

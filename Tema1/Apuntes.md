@@ -165,9 +165,9 @@ El procesador dispone de dos modos de funcionamiento:
 
 #### 📝 Actividades
 
-> **Actividad 5. El kernel como gestor de recursos**.  
+> **Actividad 5. El kernel y sus funciones**.
 > 
-> Elabora una analogía entre el *kernel* de un sistema operativo y un gestor de recursos en una organización (por ejemplo, un jefe de taller, un coordinador de materiales, etc.). Describe brevemente qué recursos gestiona y por qué es necesario que haya un único responsable.
+> Explica con tus propias palabras qué es el kernel de un sistema operativo y describe sus funciones principales (gestión de recursos, control de procesos, llamadas al sistema y acceso al hardware).
 
 > **Actividad 6. Llamadas al sistema**.  
 > 
@@ -190,36 +190,33 @@ Un proceso puede cambiar de estado durante su ejecución.
 ### Diagrama de estados
 
 ```text
-                    ┌──────────────┐
-                    │    Nuevo     │
-                    └──────┬───────┘
-                           │ Creación
-                           ▼
-                    ┌──────────────┐
-                    │    Listo     │◄──────────────┐
-                    └──────┬───────┘               │
-                           │ Planificación         │
-                           ▼                       │
-                    ┌──────────────┐               │
-                    │ En ejecución │───────────────┘
-                    └───┬──────┬───┘ Interrupción
-                        │      │
-              Espera E/S│      │ Finalización
-                        ▼      ▼
-                 ┌──────────┐ ┌────────────┐
-                 │Bloqueado │ │ Terminado  │
-                 └────┬─────┘ └────────────┘
-                      │ Evento recibido
-                      └──────────────► Listo
+                          ┌──────────────┐
+                          │    Nuevo     │
+                          └──────┬───────┘
+                                 │ Creación
+                                 ▼
+                          ┌──────────────┐
+                    ┌─────│    Listo     │◄────────────────┐
+                    │     └──────┬───────┘                 │
+                    │            │ Planificación           │ Interrupción
+                    │            ▼                         │
+                    │     ┌──────────────┐                 │
+                    │     │ En ejecución │─────────────────┘
+                    │     └───┬──────┬───┘      
+                    │         │      │
+                    │     E/S │      │ Finalización/Excepción
+                    │         ▼      ▼
+                    │  ┌──────────┐ ┌────────────┐
+                    │  │Bloqueado │ │ Terminado  │
+                    │  └────┬─────┘ └────────────┘
+                    │       │
+                    │       │ Evento recibido
+                    └───────┘
 ```
 
 #### 📝 Actividades
 
-> **Actividad 7. Estados y situaciones reales**.  
-> 
-> Asocia cada estado de un proceso (nuevo, listo, en ejecución, bloqueado, terminado) con una situación cotidiana (por ejemplo, una persona en una cola, siendo atendida, esperando algo, etc.). Justifica brevemente cada asociación.
-
-> **Actividad 8. Identificación de estados**.  
+> **Actividad 7. Identificación de estados**.  
 > 
 > Lee los siguientes casos e indica en qué estado se encontraría el proceso en cada situación:
 > - Un programa que está esperando a que el usuario pulse una tecla.  

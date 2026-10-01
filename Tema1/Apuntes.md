@@ -252,7 +252,7 @@ El sistema operativo organiza los procesos en distintas colas:
 
 ## 6. PLANIFICACIÓN
 
-### 6.1. Planificación a corto plazo
+### 6.1. PLANIFICACIÓN A CORTO PLAZO
 
 El planificador de corto plazo:
 
@@ -261,7 +261,7 @@ El planificador de corto plazo:
 - Debe tomar decisiones rápidas.
 - Utiliza algoritmos de planificación eficientes.
 
-### 6.2. PLANIFICACIÓN A CORTO PLAZO
+### 6.2. PLANIFICACIÓN A LARGO PLAZO
 
 El planificador de largo plazo:
 

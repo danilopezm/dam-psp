@@ -62,6 +62,16 @@ Sus funciones principales son:
 - Ejecutar programas de usuario.
 - Administrar procesos, memoria, dispositivos y comunicaciones.
 
+#### 📝 Actividades
+
+> **Actividad 1. Programa vs proceso**.  
+> 
+> Elabora una tabla comparativa entre *programa* y *proceso*. Incluye al menos tres diferencias clave (por ejemplo: ubicación, estado, elementos que lo componen, etc.).
+
+> **Actividad 2. Servicios en segundo plano**.  
+> 
+> Investiga qué es un demonio o servicio en segundo plano en tu sistema operativo (Windows, Linux o macOS). Elige un ejemplo concreto, describe brevemente qué función realiza y explica por qué es importante que esté siempre en ejecución.
+
 ---
 
 ## 2. FORMAS DE EJECUCIÓN
@@ -98,6 +108,16 @@ La **programación distribuida** utiliza varios ordenadores conectados mediante 
 - Cada ordenador posee su propia CPU y memoria.
 - Permite aprovechar un gran número de recursos de forma paralela.
 - La comunicación entre procesos es más costosa y compleja porque se realiza a través de la red.
+
+#### 📝 Actividades
+
+> **Actividad 3. Concurrencia en la vida cotidiana**.  
+> 
+> Describe dos situaciones de tu día a día en las que realices varias tareas alternándolas (no realmente a la vez). Explica cómo se relacionan con el concepto de *programación concurrente*.
+
+> **Actividad 4. Paralelismo y núcleos**.  
+> 
+> Investiga cuántos núcleos tiene tu procesador. Busca un ejemplo de tarea informática que se beneficie claramente del paralelismo (varios núcleos trabajando a la vez) y explica por qué esa tarea mejora su rendimiento al ejecutarse en paralelo.
 
 [Volver a Inicio](../README.md)
 
@@ -143,6 +163,16 @@ El procesador dispone de dos modos de funcionamiento:
 | **Modo kernel** | También llamado modo supervisor o privilegiado. Permite operaciones protegidas del sistema operativo. |
 | **Modo usuario** | Se utiliza para ejecutar programas de usuario con restricciones de seguridad. |
 
+#### 📝 Actividades
+
+> **Actividad 5. El kernel como gestor de recursos**.  
+> 
+> Elabora una analogía entre el *kernel* de un sistema operativo y un gestor de recursos en una organización (por ejemplo, un jefe de taller, un coordinador de materiales, etc.). Describe brevemente qué recursos gestiona y por qué es necesario que haya un único responsable.
+
+> **Actividad 6. Llamadas al sistema**.  
+> 
+> Investiga el nombre de al menos dos llamadas al sistema relacionadas con procesos (por ejemplo, en Linux o en documentación general). Para cada una, indica su nombre y describe brevemente qué acción realiza (crear proceso, terminar proceso, etc.).
+
 ---
 
 ## 4. ESTADOS DE UN PROCESO
@@ -183,6 +213,20 @@ Un proceso puede cambiar de estado durante su ejecución.
                       └──────────────► Listo
 ```
 
+#### 📝 Actividades
+
+> **Actividad 7. Estados y situaciones reales**.  
+> 
+> Asocia cada estado de un proceso (nuevo, listo, en ejecución, bloqueado, terminado) con una situación cotidiana (por ejemplo, una persona en una cola, siendo atendida, esperando algo, etc.). Justifica brevemente cada asociación.
+
+> **Actividad 8. Identificación de estados**.  
+> 
+> Lee los siguientes casos e indica en qué estado se encontraría el proceso en cada situación:
+> - Un programa que está esperando a que el usuario pulse una tecla.  
+> - Un programa que está calculando una operación en este instante.  
+> - Un programa que ha finalizado y ha cerrado su ventana.  
+> - Un programa que está cargado en memoria pero aún no ha recibido tiempo de CPU.
+
 [Volver a Inicio](../README.md)
 
 ---
@@ -196,6 +240,16 @@ El sistema operativo organiza los procesos en distintas colas:
 | **Cola de procesos** | Todos los procesos existentes en el sistema. |
 | **Cola de preparados** | Procesos listos que esperan para utilizar la CPU. |
 | **Cola de dispositivo** | Procesos que esperan una operación de entrada/salida en un dispositivo concreto. |
+
+#### 📝 Actividades
+
+> **Actividad 9. Colas en la vida real**.  
+> 
+> Elige dos tipos de colas que conozcas (por ejemplo, banco, urgencias, cafetería, etc.). Describe brevemente cómo se organiza cada una y compáralas con las *colas de procesos* de un sistema operativo, indicando semejanzas y diferencias.
+
+> **Actividad 10. Diseñar una política de cola**.  
+> 
+> Imagina que eres el sistema operativo y tienes tres procesos: uno de alarma (muy prioritario), uno de usuario (prioridad media) y una copia de seguridad (prioridad baja). Describe cómo organizarías las colas y en qué orden atenderías cada proceso, justificando tu decisión.
 
 ---
 
@@ -227,6 +281,19 @@ El planificador de largo plazo:
 | **Apropiativa** | El sistema operativo puede retirar la CPU a un proceso si aparece otro de mayor prioridad. |
 | **Tiempo compartido** | Cada proceso usa la CPU durante un intervalo llamado *cuanto* y después se selecciona otro. |
 
+#### 📝 Actividades
+
+> **Actividad 11. Tú eres el planificador**.  
+> 
+> Tienes cuatro procesos con distintas duraciones y prioridades (corto/alta, largo/baja, etc.). Propón un orden de ejecución utilizando:  
+> - Un criterio basado en prioridad.  
+> - Un criterio de tiempo compartido (todos con la misma prioridad).  
+> Justifica brevemente cada decisión.
+
+> **Actividad 12. Planificación y experiencia de usuario**.  
+> 
+> Describe una situación en la que hayas notado tu ordenador "lento". Explica, con tus palabras, qué podría estar ocurriendo con la planificación de procesos y cómo afectaría al usuario tener muchos procesos compitiendo por la CPU.
+
 [Volver a Inicio](../README.md)
 
 ---
@@ -249,6 +316,16 @@ El contexto incluye:
 - Información de gestión de memoria.
 
 > El cambio de contexto consume tiempo. Durante ese periodo, el procesador no realiza trabajo útil para los procesos de usuario.
+
+#### 📝 Actividades
+
+> **Actividad 13. Cambiar de tarea en tu vida**.  
+> 
+> Describe una situación en la que tengas que cambiar de una tarea a otra (por ejemplo, estudiar y atender una llamada). Explica qué información necesitas "guardar" mentalmente para poder retomar la primera tarea y relaciona esto con el concepto de *contexto de un proceso*.
+
+> **Actividad 14. Exceso de cambios de contexto**.  
+> 
+> Imagina un día en el que cambias constantemente de actividad (estudiar, móvil, redes, vídeos, etc.). Explica cómo afecta esto a tu productividad y relaciona esa situación con el coste del *cambio de contexto* en un ordenador.
 
 ---
 
@@ -284,6 +361,19 @@ process.destroy();
 ```
 
 Esta operación elimina el proceso hijo y libera sus recursos en el sistema operativo.
+
+#### 📝 Actividades
+
+> **Actividad 15. Procesos padre e hijo**.  
+> 
+> Elabora una analogía entre un proceso padre y un proceso hijo y una situación real (por ejemplo, un profesor que asigna una tarea a un alumno). Describe qué equivaldría a crear el proceso, a esperar su finalización y a terminarlo de forma abrupta.
+
+> **Actividad 16. Cuándo terminar un proceso**.  
+> 
+> Para cada una de las siguientes situaciones, indica si terminarías el proceso de forma normal o forzada y justifica brevemente tu respuesta:  
+> - Un programa que se ha quedado "colgado" y no responde.  
+> - Un programa que funciona correctamente.  
+> - Un programa que está realizando acciones maliciosas.
 
 [Volver a Inicio](../README.md)
 
@@ -337,6 +427,29 @@ int codigoRetorno = proceso.waitFor();
 - Por convenio, `0` suele indicar que el proceso ha terminado correctamente.
 - El código de retorno no representa los mensajes transmitidos mediante streams.
 
+#### 📝 Actividades
+
+> **Actividad 17. Predicción de comportamiento**.  
+> 
+> A partir del siguiente fragmento de código:  
+> ```java
+> ProcessBuilder pb = new ProcessBuilder("notepad");
+> Process proceso = pb.start();
+> int codigo = proceso.waitFor();
+> System.out.println("Terminó con código: " + codigo);
+> ```  
+> Responde:  
+> - ¿Qué ocurre cuando se ejecuta `start()`?  
+> - ¿En qué momento se muestra el mensaje por pantalla?  
+> - ¿Qué pasaría si se elimina la llamada a `waitFor()`?
+
+> **Actividad 18. Modificación de código**.  
+> 
+> Partiendo del ejemplo anterior, describe cómo modificarías el código para:  
+> - Ejecutar `calc.exe` en lugar de `notepad`.  
+> - Ejecutar un programa con argumentos (por ejemplo, `miPrograma arg1 arg2`).  
+> No es necesario que lo ejecutes, solo que expliques o escribas el código modificado.
+
 ---
 
 ## 10. ENTRADA, SALIDA Y STREAMS
@@ -362,6 +475,24 @@ Cuando Java crea un proceso hijo, el proceso padre se comunica con él mediante 
 | `OutputStream` | Envía datos a la entrada estándar (`stdin`) del proceso hijo. |
 | `InputStream` | Lee la salida estándar (`stdout`) generada por el proceso hijo. |
 | `ErrorStream` | Lee los mensajes de error (`stderr`) generados por el proceso hijo. |
+
+#### 📝 Actividades
+
+> **Actividad 19. Identificación de canales**.  
+> 
+> Para cada uno de los siguientes programas, indica qué usaría como `stdin`, `stdout` y `stderr`:  
+> - Una calculadora por consola que pide dos números y muestra el resultado.  
+> - Un compilador que muestra errores de sintaxis.  
+> - Un programa que lee un fichero y escribe el resultado en otro.
+
+> **Actividad 20. Redirección de salida**.  
+> 
+> Investiga qué significan las siguientes órdenes en un sistema tipo Unix/Linux:  
+> ```bash
+> programa > salida.txt
+> programa 2> errores.txt
+> ```  
+> Describe brevemente qué ocurre con `stdout` y `stderr` en cada caso y explica por qué puede ser útil separar la salida normal de los errores.
 
 [Volver a Inicio](../README.md)
 
@@ -410,6 +541,27 @@ Comunicación
 Sincronización
 ```
 
+#### 📝 Actividades
+
+> **Actividad 21. Esquema de comunicación**.  
+> 
+> Dibuja un esquema sencillo en el que un proceso padre y un proceso hijo se comunican mediante flujos de datos. Etiqueta los canales (puedes usar `stdin`, `stdout`, `stderr` o simplemente "canal de datos") y describe brevemente qué tipo de información viajaría en cada sentido.
+
+> **Actividad 22. Sincronización con `waitFor()`**.  
+> 
+> A partir del siguiente fragmento:  
+> ```java
+> Process p = new ProcessBuilder("tarea").start();
+> // línea A
+> System.out.println("Terminó");
+> // línea B
+> p.waitFor();
+> ```  
+> Responde:  
+> - Si `waitFor()` está en la línea B, ¿cuándo se imprime "Terminó"?  
+> - ¿Dónde colocarías `waitFor()` si quieres que el mensaje se muestre solo cuando la tarea haya acabado realmente?  
+> - ¿En qué situaciones te interesaría no usar `waitFor()`?
+
 ---
 
 ## 12. PROGRAMACIÓN MULTIPROCESO
@@ -450,6 +602,23 @@ Objetivos:
 #### 3. Implementación
 
 Crear los procesos y programar los mecanismos necesarios de comunicación y sincronización.
+
+#### 📝 Actividades
+
+> **Actividad 23. División de una tarea en procesos**.  
+> 
+> Imagina una aplicación que:  
+> - Lee un fichero grande.  
+> - Procesa los datos (por ejemplo, los filtra o transforma).  
+> - Guarda el resultado en otro fichero.  
+> Propón cómo dividirías esta tarea en varios procesos, qué haría cada uno y qué procesos necesitarían comunicarse entre sí.
+
+> **Actividad 24. Cuándo usar varios procesos**.  
+> 
+> Completa las siguientes frases con tus propias palabras:  
+> - Usar varios procesos tiene sentido cuando…  
+> - No merece la pena usar varios procesos cuando…  
+> - Un riesgo de usar muchos procesos es…
 
 [Volver a Inicio](../README.md)
 
@@ -542,6 +711,17 @@ PROGRAMACIÓN DE SERVICIOS Y PROCESOS
 - `stdin`, `stdout` y `stderr` representan los canales estándar de un proceso.
 - La **comunicación** intercambia datos; la **sincronización** coordina cuándo se ejecutan las operaciones.
 - Una aplicación multiproceso debe minimizar la comunicación innecesaria entre procesos.
+
+#### 📝 Actividades
+
+> **Actividad 25. Autoevaluación**.  
+> 
+> Responde brevemente (sí/no o con una frase) a las siguientes preguntas:  
+> - ¿Sabes explicar la diferencia entre programa y proceso?  
+> - ¿Sabes describir los estados de un proceso sin mirar el tema?  
+> - ¿Entiendes para qué sirve la planificación y los tipos principales?  
+> - ¿Sabes qué hacen `ProcessBuilder`, `start()` y `waitFor()` en Java?  
+> - ¿Puedes nombrar al menos tres mecanismos de comunicación entre procesos?
 
 ---
 

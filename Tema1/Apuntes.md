@@ -62,7 +62,7 @@ Sus funciones principales son:
 - Ejecutar programas de usuario.
 - Administrar procesos, memoria, dispositivos y comunicaciones.
 
-Volver al índice
+[Volver a Inicio](../README.md)
 
 ---
 
@@ -101,7 +101,7 @@ La **programación distribuida** utiliza varios ordenadores conectados mediante 
 - Permite aprovechar un gran número de recursos de forma paralela.
 - La comunicación entre procesos es más costosa y compleja porque se realiza a través de la red.
 
-Volver al índice
+[Volver a Inicio](../README.md)
 
 ---
 
@@ -187,7 +187,7 @@ Un proceso puede cambiar de estado durante su ejecución.
                       └──────────────► Listo
 ```
 
-Volver al índice
+[Volver a Inicio](../README.md)
 
 ---
 
@@ -214,7 +214,7 @@ El planificador de corto plazo:
 - Debe tomar decisiones rápidas.
 - Utiliza algoritmos de planificación eficientes.
 
-### 6.1. PLANIFICACIÓN A CORTO PLAZO
+### 6.2. PLANIFICACIÓN A CORTO PLAZO
 
 El planificador de largo plazo:
 
@@ -231,7 +231,7 @@ El planificador de largo plazo:
 | **Apropiativa** | El sistema operativo puede retirar la CPU a un proceso si aparece otro de mayor prioridad. |
 | **Tiempo compartido** | Cada proceso usa la CPU durante un intervalo llamado *cuanto* y después se selecciona otro. |
 
-Volver al índice
+[Volver a Inicio](../README.md)
 
 ---
 
@@ -254,7 +254,7 @@ El contexto incluye:
 
 > El cambio de contexto consume tiempo. Durante ese periodo, el procesador no realiza trabajo útil para los procesos de usuario.
 
-Volver al índice
+[Volver a Inicio](../README.md)
 
 ---
 
@@ -291,7 +291,7 @@ process.destroy();
 
 Esta operación elimina el proceso hijo y libera sus recursos en el sistema operativo.
 
-Volver al índice
+[Volver a Inicio](../README.md)
 
 ---
 
@@ -343,7 +343,7 @@ int codigoRetorno = proceso.waitFor();
 - Por convenio, `0` suele indicar que el proceso ha terminado correctamente.
 - El código de retorno no representa los mensajes transmitidos mediante streams.
 
-Volver al índice
+[Volver a Inicio](../README.md)
 
 ---
 
@@ -371,7 +371,7 @@ Cuando Java crea un proceso hijo, el proceso padre se comunica con él mediante 
 | `InputStream` | Lee la salida estándar (`stdout`) generada por el proceso hijo. |
 | `ErrorStream` | Lee los mensajes de error (`stderr`) generados por el proceso hijo. |
 
-Volver al índice
+[Volver a Inicio](../README.md)
 
 ---
 
@@ -418,7 +418,7 @@ Comunicación
 Sincronización
 ```
 
-Volver al índice
+[Volver a Inicio](../README.md)
 
 ---
 
@@ -461,7 +461,7 @@ Objetivos:
 
 Crear los procesos y programar los mecanismos necesarios de comunicación y sincronización.
 
-Volver al índice
+[Volver a Inicio](../README.md)
 
 ---
 
@@ -536,7 +536,7 @@ PROGRAMACIÓN DE SERVICIOS Y PROCESOS
     └── Implementación
 ```
 
-Volver al índice
+[Volver a Inicio](../README.md)
 
 ---
 

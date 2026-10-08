@@ -294,20 +294,20 @@ El planificador de largo plazo:
 
 ## 7. CAMBIO DE CONTEXTO
 
-El **cambio de contexto** ocurre cuando el procesador deja de ejecutar un proceso y pasa a ejecutar otro.
+Un **cambio de contexto** se produce cuando el procesador interrumpe temporalmente la ejecución de un proceso para ejecutar otro.
 
-El sistema operativo realiza estos pasos:
+Para realizar este cambio, el sistema operativo:
 
-1. Guarda el contexto del proceso actual.
-2. El planificador selecciona el siguiente proceso.
-3. Restaura el contexto del proceso seleccionado.
-4. Reanuda la ejecución de dicho proceso.
+1. Guarda la información necesaria para continuar posteriormente el proceso actual.
+2. Decide qué proceso se ejecutará a continuación.
+3. Carga la información que tenía guardada del nuevo proceso.
+4. Hace que el nuevo proceso continúe desde el punto en el que se había detenido.
 
-El contexto incluye:
+El contexto incluye principalmente:
 
-- Estado del proceso.
-- Estado del procesador.
-- Información de gestión de memoria.
+- El estado del proceso: indica si está preparado, en ejecución, bloqueado o terminado.
+- El estado del procesador: contiene información como la siguiente instrucción que debe ejecutarse y los valores de los registros.
+- La información de gestión de memoria: indica qué espacio de memoria utiliza el proceso y cómo está organizado.
 
 > El cambio de contexto consume tiempo. Durante ese periodo, el procesador no realiza trabajo útil para los procesos de usuario.
 
@@ -325,38 +325,33 @@ El contexto incluye:
 
 Un proceso puede solicitar al sistema operativo la creación de otro proceso.
 
-- El proceso creador se denomina **proceso padre**.
-- El proceso creado se denomina **proceso hijo**.
-- Padre e hijo pueden ejecutarse concurrentemente.
-- Cada proceso dispone de su propia imagen de memoria.
-- Los procesos pueden formar un **árbol de procesos**.
+- El proceso que solicita la creación se denomina **proceso padre**.
+- El proceso creado se denomina **proceso hijo** o subproceso.
+- El padre y el hijo pueden ejecutarse de forma concurrente.
+- Cada proceso tiene su propio espacio de memoria, aunque puede heredar algunos recursos o información del proceso padre.
+- Un proceso hijo también puede crear nuevos procesos, formando una estructura jerárquica o **árbol de procesos**.
 
 ### 8.2. TERMINACIÓN DE PROCESOS
 
-Cuando un proceso termina:
+Un proceso termina cuando finaliza su trabajo o cuando se produce algún error que obliga a detenerlo.
 
-- Debe comunicar su finalización al sistema operativo.
-- Libera los recursos que tenía asignados.
-- Normalmente utiliza la operación `exit`.
-- Puede enviar información sobre su finalización al proceso padre.
+Cuando termina un proceso:
+- El sistema operativo libera los recursos que tenía asignados, como memoria, archivos y otros recursos.
+- El proceso puede comunicar al sistema operativo un código de finalización.
+- El proceso padre puede recibir información sobre el resultado de la terminación del proceso hijo.
+- En muchos sistemas, la operación utilizada para indicar una terminación normal se denomina `exit`.
 
 ### 8.3. TERMINACIÓN FORZADA
 
-Un proceso padre puede terminar un proceso hijo antes de que finalice normalmente.
+Un proceso puede ser terminado antes de completar su ejecución. Esta terminación puede ser solicitada por el sistema operativo, por el usuario o por otro proceso con los permisos necesarios.
 
-En Java se utiliza:
+En Java, si se ha creado un proceso mediante `ProcessBuilder` o `Runtime.exec()`, se puede solicitar su terminación con:
 
 ```java
 process.destroy();
 ```
 
-Esta operación elimina el proceso hijo y libera sus recursos en el sistema operativo.
-
-#### 📝 Actividades
-
-> **Actividad 11. Responde**.  
-> 
-> ¿Qué significa que padre e hijo pueden ejecutarse concurrentemente? 
+Este método solicita la terminación del subproceso representado por el objeto `Process`. Después, se pueden utilizar métodos como `isAlive()`  o `waitFor()` para comprobar si realmente ha terminado. La documentación de Java describe `destroy()` como una operación que termina forzosamente el subproceso representado por `Process`.
 
 [Volver a Inicio](../README.md)
 
@@ -412,7 +407,7 @@ int codigoRetorno = proceso.waitFor();
 
 #### 📝 Actividades
 
-> **Actividad 12. Predicción de comportamiento**.  
+> **Actividad 11. Predicción de comportamiento**.  
 > 
 > A partir del siguiente fragmento de código:  
 > ```java
@@ -426,7 +421,7 @@ int codigoRetorno = proceso.waitFor();
 > - ¿En qué momento se muestra el mensaje por pantalla?  
 > - ¿Qué pasaría si se elimina la llamada a `waitFor()`?
 
-> **Actividad 13. Modificación de código**.  
+> **Actividad 12. Modificación de código**.  
 > 
 > Partiendo del ejemplo anterior, describe cómo modificarías el código para:  
 > - Ejecutar `calc.exe` en lugar de `notepad`.  
@@ -461,14 +456,14 @@ Cuando Java crea un proceso hijo, el proceso padre se comunica con él mediante 
 
 #### 📝 Actividades
 
-> **Actividad 14. Identificación de canales**.  
+> **Actividad 13. Identificación de canales**.  
 > 
 > Para cada uno de los siguientes programas, indica qué usaría como `stdin`, `stdout` y `stderr`:  
 > - Una calculadora por consola que pide dos números y muestra el resultado.  
 > - Un compilador que muestra errores de sintaxis.  
 > - Un programa que lee un fichero y escribe el resultado en otro.
 
-> **Actividad 15. Redirección de salida**.  
+> **Actividad 14. Redirección de salida**.  
 > 
 > Investiga qué significan las siguientes órdenes en un sistema tipo Unix/Linux:  
 > ```bash
@@ -526,11 +521,11 @@ Sincronización
 
 #### 📝 Actividades
 
-> **Actividad 16. Esquema de comunicación**.  
+> **Actividad 15. Esquema de comunicación**.  
 > 
 > Dibuja un esquema sencillo en el que un proceso padre y un proceso hijo se comunican mediante flujos de datos. Etiqueta los canales (puedes usar `stdin`, `stdout`, `stderr` o simplemente "canal de datos") y describe brevemente qué tipo de información viajaría en cada sentido.
 
-> **Actividad 17. Sincronización con `waitFor()`**.  
+> **Actividad 16. Sincronización con `waitFor()`**.  
 > 
 > A partir del siguiente fragmento:  
 > ```java
@@ -588,7 +583,7 @@ Crear los procesos y programar los mecanismos necesarios de comunicación y sinc
 
 #### 📝 Actividades
 
-> **Actividad 18. División de una tarea en procesos**.  
+> **Actividad 17. División de una tarea en procesos**.  
 > 
 > Imagina una aplicación que:  
 > - Lee un fichero grande.  
@@ -596,7 +591,7 @@ Crear los procesos y programar los mecanismos necesarios de comunicación y sinc
 > - Guarda el resultado en otro fichero.  
 > Propón cómo dividirías esta tarea en varios procesos, qué haría cada uno y qué procesos necesitarían comunicarse entre sí.
 
-> **Actividad 19. Cuándo usar varios procesos**.  
+> **Actividad 18. Cuándo usar varios procesos**.  
 > 
 > Completa las siguientes frases con tus propias palabras:  
 > - Usar varios procesos tiene sentido cuando…  

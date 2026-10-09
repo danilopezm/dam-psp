@@ -351,7 +351,7 @@ En Java, si se ha creado un proceso mediante `ProcessBuilder` o `Runtime.exec()`
 process.destroy();
 ```
 
-Este método solicita la terminación del subproceso representado por el objeto `Process`. Después, se pueden utilizar métodos como `isAlive()`  o `waitFor()` para comprobar si realmente ha terminado. La documentación de Java describe `destroy()` como una operación que termina forzosamente el subproceso representado por `Process`.
+Este método solicita la terminación del subproceso representado por el objeto `Process`. Después, se pueden utilizar métodos como `isAlive()`  o `waitFor()` para comprobar si realmente ha terminado.
 
 [Volver a Inicio](../README.md)
 
@@ -359,23 +359,59 @@ Este método solicita la terminación del subproceso representado por el objeto 
 
 ## 9. PROCESOS EN JAVA
 
-En Java, la clase `Process` representa un proceso creado en el sistema operativo.
+En Java, la clase `Process` representa un **proceso externo** creado por el sistema operativo: por ejemplo, el Bloc de notas, la calculadora o cualquier otro programa ejecutable.
+
+Cuando un programa Java lanza otro programa, se producen dos procesos:
+- **Proceso padre**: el programa Java.
+- **Proceso hijo**: el programa externo ejecutado, como notepad.
+
+La clase `Process` permite controlar ese proceso hijo: esperar a que termine, consultar su código de salida, enviarle datos o leer su salida.
 
 ### 9.1. ProcessBuilder
 
-`ProcessBuilder` permite configurar y lanzar un proceso externo.
+`ProcessBuilder` permite configurar y lanzar un proceso externo. Es la forma recomendada en Java para crear procesos.
 
 ```java
-ProcessBuilder pb = new ProcessBuilder("programa", "argumento");
+ProcessBuilder pb = new ProcessBuilder("notepad");
 Process proceso = pb.start();
 ```
 
-Características:
+En este ejemplo:
+1. Se crea un objeto `ProcessBuilder` con el programa notepad.
+2. `start()` solicita al sistema operativo que ejecute Notepad.
+3. `start()` devuelve un objeto Process, que representa al proceso hijo.
 
-- `start()` inicia el proceso.
-- `command()` define el comando y sus argumentos.
-- `directory()` permite establecer el directorio de trabajo.
-- `environment()` permite consultar o modificar las variables de entorno.
+El método `start()` crea realmente el proceso utilizando el comando, los argumentos, el directorio de trabajo y las variables de entorno configurados en el `ProcessBuilder`.
+
+### Métodos principales
+
+| Método | Función |
+|---|---|
+| `start()` | Lanza el proceso y devuelve un objeto `Process`. |
+| `command()` | Define o consulta el programa y sus argumentos. |
+| `directory()` | Establece el directorio de trabajo del proceso hijo. |
+| `environment()` | Permite consultar o modificar las variables de entorno. |
+
+Por defecto, el proceso hijo utiliza el mismo directorio de trabajo y una copia de las variables de entorno del proceso Java que lo lanza.
+
+### Ejemplo con argumentos
+
+```java
+ProcessBuilder pb = new ProcessBuilder("miPrograma", "arg1", "arg2");
+Process proceso = pb.start();
+```
+
+Cada valor entre comillas es una parte independiente del comando:
+
+- `"miPrograma"`: programa a ejecutar.
+- `"arg1"`: primer argumento.
+- `"arg2"`: segundo argumento.
+
+Equivale a escribir en la consola:
+
+```bash
+miPrograma arg1 arg2
+```
 
 ### 9.2. Runtime.exec()
 
@@ -383,15 +419,24 @@ La clase `Runtime` también permite ejecutar comandos del sistema.
 
 ```java
 Runtime runtime = Runtime.getRuntime();
-Process proceso = runtime.exec("programa");
+Process proceso = runtime.exec("notepad");
 ```
 
-Puede recibir:
+También puede recibir argumentos, variables de entorno y directorio de trabajo. Para pasar argumentos, se recomienda utilizar un array de `String`:
 
-- Comando.
-- Argumentos.
-- Variables de entorno.
-- Directorio de trabajo.
+```java
+Runtime runtime = Runtime.getRuntime();
+Process proceso = runtime.exec(new String[] {"miPrograma", "arg1", "arg2"});
+```
+
+### ProcessBuilder o Runtime.exec()
+
+| Aspecto | `ProcessBuilder` | `Runtime.exec()` |
+|---|---|---|
+| Recomendación actual | Opción moderna y más flexible. | Alternativa más antigua. |
+| Configuración | Permite configurar comando, argumentos, directorio y entorno antes de lanzar. | Permite ejecutar directamente un comando. |
+| Argumentos | Se indican como elementos separados. | Conviene usar un array de `String`. |
+| Uso habitual | `new ProcessBuilder("programa", "arg1").start()` | `Runtime.getRuntime().exec("programa")` |
 
 ### 9.3. ESPERAR AL PROCESO HIJO
 
@@ -401,9 +446,45 @@ El método `waitFor()` bloquea el proceso padre hasta que termina el proceso hij
 int codigoRetorno = proceso.waitFor();
 ```
 
-- Devuelve un código entero.
-- Por convenio, `0` suele indicar que el proceso ha terminado correctamente.
-- El código de retorno no representa los mensajes transmitidos mediante streams.
+Mientras el proceso hijo sigue ejecutándose, el programa Java queda detenido en esa línea.
+Cuando el hijo termina, `waitFor()` devuelve su código de salida.
+
+### Código de retorno
+
+Por convenio:
+
+- `0`: el proceso terminó correctamente.
+- Distinto de `0`: normalmente indica un error o una finalización anormal.
+
+El código de retorno NO representa los mensajes que el proceso hijo escribe por pantalla. Esos mensajes se transmiten mediante los streams de salida o de error del proceso; el código de retorno es solo un número que indica cómo terminó
+
+## Ejemplo completo
+
+```java
+import java.io.IOException;
+
+public class EjemploProcesos {
+    public static void main(String[] args) throws IOException, InterruptedException {
+        ProcessBuilder pb = new ProcessBuilder("notepad");
+        Process proceso = pb.start();
+
+        System.out.println("Notepad abierto. Esperando a que se cierre...");
+
+        int codigo = proceso.waitFor();
+
+        System.out.println("Terminó con código: " + codigo);
+    }
+}
+```
+
+### ¿Qué ocurre paso a paso?
+
+1. `pb.start()` abre Notepad.
+2. Java muestra el mensaje `Notepad abierto. Esperando a que se cierre...`.
+3. `waitFor()` detiene el programa Java.
+4. El usuario utiliza Notepad.
+5. Cuando el usuario cierra Notepad, `waitFor()` devuelve el código de salida.
+6. Java muestra, por ejemplo, `Terminó con código: 0`.
 
 #### 📝 Actividades
 
@@ -415,7 +496,8 @@ int codigoRetorno = proceso.waitFor();
 > Process proceso = pb.start();
 > int codigo = proceso.waitFor();
 > System.out.println("Terminó con código: " + codigo);
-> ```  
+> ```
+> 
 > Responde:  
 > - ¿Qué ocurre cuando se ejecuta `start()`?  
 > - ¿En qué momento se muestra el mensaje por pantalla?  
@@ -434,9 +516,7 @@ int codigoRetorno = proceso.waitFor();
 
 Un proceso recibe datos, los transforma y genera resultados:
 
-```text
 Entrada ──► Proceso ──► Salida
-```
 
 | Canal | Nombre | Función habitual |
 |---|---|---|
@@ -507,17 +587,6 @@ System.out.println("Código de retorno: " + retorno);
 - El proceso padre queda bloqueado.
 - El hijo continúa hasta finalizar.
 - El padre recibe el código de retorno del hijo.
-
-```text
-Comunicación
-│
-├── Intercambio de datos
-├── Coordinación del ritmo
-└── Control de la ejecución
-    │
-    ▼
-Sincronización
-```
 
 #### 📝 Actividades
 
@@ -692,7 +761,7 @@ PROGRAMACIÓN DE SERVICIOS Y PROCESOS
 
 #### 📝 Actividades
 
-> **Actividad 20. Autoevaluación**.  
+> **Actividad final. Autoevaluación**.  
 > 
 > Responde brevemente (sí/no o con una frase) a las siguientes preguntas:  
 > - ¿Sabes explicar la diferencia entre programa y proceso?  

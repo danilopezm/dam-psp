@@ -488,27 +488,13 @@ public class EjemploProcesos {
 
 #### 📝 Actividades
 
-> **Actividad 11. Predicción de comportamiento**.  
+> **Actividad 11. Predicción de comportamiento y modificación de código**.  
 > 
-> A partir del siguiente fragmento de código:  
-> ```java
-> ProcessBuilder pb = new ProcessBuilder("notepad");
-> Process proceso = pb.start();
-> int codigo = proceso.waitFor();
-> System.out.println("Terminó con código: " + codigo);
-> ```
+> Partiendo del ejemplo anterior
 > 
 > Responde:  
-> - ¿Qué ocurre cuando se ejecuta `start()`?  
-> - ¿En qué momento se muestra el mensaje por pantalla?  
 > - ¿Qué pasaría si se elimina la llamada a `waitFor()`?
-
-> **Actividad 12. Modificación de código**.  
-> 
-> Partiendo del ejemplo anterior, describe cómo modificarías el código para:  
-> - Ejecutar `calc.exe` en lugar de `notepad`.  
-> - Ejecutar un programa con argumentos (por ejemplo, `miPrograma arg1 arg2`).  
-> No es necesario que lo ejecutes, solo que expliques o escribas el código modificado.
+> - ¿Cómo modificarías el código para ejecutar la calculadora en lugar del bloc de notas?
 
 ---
 
@@ -536,14 +522,14 @@ Cuando Java crea un proceso hijo, el proceso padre se comunica con él mediante 
 
 #### 📝 Actividades
 
-> **Actividad 13. Identificación de canales**.  
+> **Actividad 12. Identificación de canales**.  
 > 
 > Para cada uno de los siguientes programas, indica qué usaría como `stdin`, `stdout` y `stderr`:  
 > - Una calculadora por consola que pide dos números y muestra el resultado.  
 > - Un compilador que muestra errores de sintaxis.  
 > - Un programa que lee un fichero y escribe el resultado en otro.
 
-> **Actividad 14. Redirección de salida**.  
+> **Actividad 13. Redirección de salida**.  
 > 
 > Investiga qué significan las siguientes órdenes en un sistema tipo Unix/Linux:  
 > ```bash
@@ -588,27 +574,6 @@ System.out.println("Código de retorno: " + retorno);
 - El hijo continúa hasta finalizar.
 - El padre recibe el código de retorno del hijo.
 
-#### 📝 Actividades
-
-> **Actividad 15. Esquema de comunicación**.  
-> 
-> Dibuja un esquema sencillo en el que un proceso padre y un proceso hijo se comunican mediante flujos de datos. Etiqueta los canales (puedes usar `stdin`, `stdout`, `stderr` o simplemente "canal de datos") y describe brevemente qué tipo de información viajaría en cada sentido.
-
-> **Actividad 16. Sincronización con `waitFor()`**.  
-> 
-> A partir del siguiente fragmento:  
-> ```java
-> Process p = new ProcessBuilder("tarea").start();
-> // línea A
-> System.out.println("Terminó");
-> // línea B
-> p.waitFor();
-> ```  
-> Responde:  
-> - Si `waitFor()` está en la línea B, ¿cuándo se imprime "Terminó"?  
-> - ¿Dónde colocarías `waitFor()` si quieres que el mensaje se muestre solo cuando la tarea haya acabado realmente?  
-> - ¿En qué situaciones te interesaría no usar `waitFor()`?
-
 ---
 
 ## 12. PROGRAMACIÓN MULTIPROCESO
@@ -652,15 +617,7 @@ Crear los procesos y programar los mecanismos necesarios de comunicación y sinc
 
 #### 📝 Actividades
 
-> **Actividad 17. División de una tarea en procesos**.  
-> 
-> Imagina una aplicación que:  
-> - Lee un fichero grande.  
-> - Procesa los datos (por ejemplo, los filtra o transforma).  
-> - Guarda el resultado en otro fichero.  
-> Propón cómo dividirías esta tarea en varios procesos, qué haría cada uno y qué procesos necesitarían comunicarse entre sí.
-
-> **Actividad 18. Cuándo usar varios procesos**.  
+> **Actividad 14. Cuándo usar varios procesos**.  
 > 
 > Completa las siguientes frases con tus propias palabras:  
 > - Usar varios procesos tiene sentido cuando…  
@@ -668,6 +625,82 @@ Crear los procesos y programar los mecanismos necesarios de comunicación y sinc
 > - Un riesgo de usar muchos procesos es…
 
 [Volver a Inicio](../README.md)
+
+---
+
+#### 💻 Ejemplos
+
+**Ejemplo 1**: Lanzar Paint y esperar a que termine
+
+```java
+public static void main(String[] args) throws IOException {
+    ProcessBuilder pb = new ProcessBuilder("mspaint.exe");
+    Process process = pb.start();
+
+    try {
+        process.waitFor();
+        System.out.println("Paint terminó con código de salida: " + process.exitValue());
+    } catch (InterruptedException ex) {
+        System.err.println("Se interrumpió la espera del proceso: " + ex.getMessage());
+        Thread.currentThread().interrupt();
+    }
+}
+```
+
+**Ejemplo 2**: Crear un ProcessBuilder vacío y usar command()
+
+```java
+public static void main(String[] args) {
+    ProcessBuilder pb = new ProcessBuilder();
+    pb.command("mspaint.exe");
+
+    try {
+        Process process = pb.start();
+        // Opcional: process.destroy();
+    } catch (IOException e) {
+        System.out.println("Error ejecutando el hijo");
+        System.out.println("Descripción: " + e.getMessage());
+    }
+}
+```
+
+**Ejemplo 3**: Obtener el código de salida con waitFor()
+
+```java
+public static void main(String[] args) throws IOException {
+    ProcessBuilder pb = new ProcessBuilder("mspaint.exe");
+    Process process = pb.start();
+
+    try {
+        int estado = process.waitFor();
+        System.out.println("Estado del hijo: " + estado);
+    } catch (InterruptedException ex) {
+        System.err.println("Se interrumpió la espera del proceso: " + ex.getMessage());
+        Thread.currentThread().interrupt();
+    }
+}
+```
+
+**Ejemplo 4**: Esperar, destruir el proceso y obtener su estado
+
+```java
+public static void main(String[] args) {
+    ProcessBuilder pb = new ProcessBuilder();
+    pb.command("mspaint.exe");
+
+    try {
+        Process process = pb.start();
+        Thread.sleep(2000);
+        process.destroy();
+
+        int estado = process.waitFor();
+        System.out.println("Estado del hijo: " + estado);
+    } catch (Exception e) {
+        System.out.println("Error ejecutando el hijo");
+        System.out.println("Descripción: " + e.getMessage());
+    }
+}
+```
 
 ---
 

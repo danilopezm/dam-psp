@@ -792,17 +792,6 @@ PROGRAMACIÓN DE SERVICIOS Y PROCESOS
 - La **comunicación** intercambia datos; la **sincronización** coordina cuándo se ejecutan las operaciones.
 - Una aplicación multiproceso debe minimizar la comunicación innecesaria entre procesos.
 
-#### 📝 Actividades
-
-> **Actividad final. Autoevaluación**.  
-> 
-> Responde brevemente (sí/no o con una frase) a las siguientes preguntas:  
-> - ¿Sabes explicar la diferencia entre programa y proceso?  
-> - ¿Sabes describir los estados de un proceso sin mirar el tema?  
-> - ¿Entiendes para qué sirve la planificación y los tipos principales?  
-> - ¿Sabes qué hacen `ProcessBuilder`, `start()` y `waitFor()` en Java?  
-> - ¿Puedes nombrar al menos tres mecanismos de comunicación entre procesos?
-
 ---
 
 <small>Material de estudio elaborado a partir del Capítulo 1 de Programación de Servicios y Procesos.</small>

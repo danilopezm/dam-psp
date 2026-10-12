@@ -632,6 +632,9 @@ Crear los procesos y programar los mecanismos necesarios de comunicación y sinc
 
 **Ejemplo 1**: Lanzar Paint y esperar a que termine
 
+<details>
+<summary>Ver Ejemplo 1</summary>
+
 ```java
 public static void main(String[] args) throws IOException {
     ProcessBuilder pb = new ProcessBuilder("mspaint.exe");
@@ -646,6 +649,8 @@ public static void main(String[] args) throws IOException {
     }
 }
 ```
+
+</details>
 
 **Ejemplo 2**: Crear un ProcessBuilder vacío y usar command()
 

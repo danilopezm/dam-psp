@@ -93,6 +93,11 @@ La **programación concurrente** consiste en alternar procesos en la CPU.
 - El sistema operativo decide cuándo se intercambian.
 - Es útil cuando algunos procesos deben esperar operaciones de entrada/salida.
 
+> **Diferencia entre multiprogramación y programación concurrente:**  
+> La multiprogramación es una **técnica del sistema operativo** que alterna varios programas en la CPU para aprovecharla mejor.  
+> La programación concurrente es un **concepto más general**: varias tareas progresan de forma aparentemente simultánea, aunque pueden alternarse en una sola CPU.  
+> Por tanto, la multiprogramación es una forma de conseguir concurrencia, pero no la única.
+
 ### 2.3. PROGRAMACIÓN PARALELA
 
 La **programación paralela** permite ejecutar varias instrucciones de forma real y simultánea.
@@ -502,23 +507,35 @@ public class EjemploProcesos {
 
 Un proceso recibe datos, los transforma y genera resultados:
 
+```text
 Entrada ──► Proceso ──► Salida
+```
 
-| Canal | Nombre | Función habitual |
+Un **stream** o flujo es un canal de comunicación por el que un proceso envía o recibe datos de forma secuencial.
+
+Por defecto, todo proceso tiene tres canales estándar:
+
+| Canal | Nombre | Descriptor | Función habitual |
+|---|---|---:|---|
+| Entrada estándar | `stdin` | `0` | Recibe datos, normalmente desde el teclado. |
+| Salida estándar | `stdout` | `1` | Muestra resultados normales, normalmente en pantalla. |
+| Salida de error | `stderr` | `2` | Envía mensajes de error o diagnóstico. |
+
+Estos canales no están obligatoriamente conectados al teclado o a la pantalla: pueden redirigirse a ficheros, a otros procesos o a dispositivos.
+
+### Streams asociados a `Process`
+
+Cuando Java crea un proceso hijo, el proceso padre puede comunicarse con él mediante flujos.
+
+**Importante:** la perspectiva es la del proceso padre.
+
+| Método de `Process` | Tipo devuelto | Comunicación |
 |---|---|---|
-| Entrada estándar | `stdin` | Recibe datos, normalmente desde el teclado. |
-| Salida estándar | `stdout` | Muestra resultados, normalmente en pantalla. |
-| Salida de error | `stderr` | Envía mensajes de error. |
+| `getOutputStream()` | `OutputStream` | El padre escribe datos que el hijo recibe por su `stdin`. |
+| `getInputStream()` | `InputStream` | El padre lee la salida normal (`stdout`) generada por el hijo. |
+| `getErrorStream()` | `InputStream` | El padre lee los mensajes de error (`stderr`) generados por el hijo. |
 
-### Streams asociados a Process
-
-Cuando Java crea un proceso hijo, el proceso padre se comunica con él mediante flujos:
-
-| Stream | Función |
-|---|---|
-| `OutputStream` | Envía datos a la entrada estándar (`stdin`) del proceso hijo. |
-| `InputStream` | Lee la salida estándar (`stdout`) generada por el proceso hijo. |
-| `ErrorStream` | Lee los mensajes de error (`stderr`) generados por el proceso hijo. |
+El nombre `getInputStream()` puede confundir: no se refiere a la entrada del proceso hijo, sino al flujo desde el cual el proceso padre lee la salida del hijo.
 
 #### 📝 Actividades
 
@@ -544,35 +561,61 @@ Cuando Java crea un proceso hijo, el proceso padre se comunica con él mediante 
 
 ## 11. COMUNICACIÓN Y SINCRONIZACIÓN
 
-### 11.1. COMUNICACIÓN ENTRE PROCESOS
+En el apartado anterior se han visto los streams estándar de un proceso: `stdin`, `stdout` y `stderr`.  
+Estos streams no solo sirven para comunicarse con el teclado o la pantalla: también pueden utilizarse para que dos procesos se comuniquen entre sí.
+
+Cada proceso tiene su propio espacio de memoria. Por eso, cuando varios procesos necesitan intercambiar información o coordinar su ejecución, el sistema operativo les proporciona mecanismos de **comunicación entre procesos** (*IPC, Inter-Process Communication*).
+
+Hay dos necesidades relacionadas pero distintas:
+
+- **Comunicación:** enviar o recibir datos entre procesos.
+- **Sincronización:** coordinar el orden o el momento en que los procesos realizan sus acciones.
+
+### 11.1. Comunicación entre procesos
 
 Los procesos pueden intercambiar datos mediante varios mecanismos:
 
-| Mecanismo | Utilidad |
-|---|---|
-| Streams | Comunicación mediante entrada, salida y errores estándar. |
-| Pipes | Canal sencillo de comunicación, frecuente entre padre e hijo. |
-| Sockets | Comunicación entre procesos, incluso en ordenadores distintos. |
-| Memoria compartida | Región de memoria a la que acceden varios procesos. |
-| Semáforos | Mecanismo de coordinación y bloqueo entre procesos. |
-| JNI | Permite acceder desde Java a código escrito en otros lenguajes. |
+| Mecanismo | Utilidad | Ejemplo |
+|---|---|---|
+| **Streams** | Comunicación mediante la entrada, salida y error estándar de un proceso. | Un programa Java ejecuta un comando y lee su salida mediante `getInputStream()`. |
+| **Pipes** | Canal de comunicación, normalmente unidireccional, que conecta la salida de un proceso con la entrada de otro. | En Linux: `comando1 | comando2`. |
+| **Sockets** | Comunicación bidireccional entre procesos, incluso si están en ordenadores distintos conectados por red. | Un cliente y un servidor se comunican mediante TCP. |
+| **Memoria compartida** | Varios procesos acceden a una misma región de memoria para intercambiar datos rápidamente. | Dos procesos comparten una variable o una estructura de datos. |
+| **Semáforos** | Mecanismo de coordinación que controla el acceso a recursos compartidos y evita accesos simultáneos conflictivos. | Varios procesos acceden a una misma zona de memoria compartida. |
+| **JNI** | Permite que código Java invoque o sea invocado por código escrito en otros lenguajes, como C o C++. | Una aplicación Java utiliza una librería nativa escrita en C. |
 
-### 11.2. SINCRONIZACIÓN
+Los streams vistos en el apartado anterior son un mecanismo de comunicación entre procesos. Cuando un proceso padre crea un proceso hijo, puede escribir en el `stdin` del hijo o leer su `stdout` y `stderr`.
 
-La **sincronización** permite coordinar el orden y el ritmo de ejecución de los procesos.
+La memoria compartida es rápida, pero como varios procesos pueden leer y escribir a la vez, normalmente necesita mecanismos de sincronización, como semáforos, para evitar condiciones de carrera.
 
-Un ejemplo es `waitFor()`:
+### 11.2. Sincronización
+
+La **sincronización** permite coordinar el orden y el ritmo de ejecución de los procesos o hilos.
+
+Sirve, por ejemplo, para:
+
+- Esperar a que otro proceso termine antes de continuar.
+- Evitar que dos procesos modifiquen el mismo recurso al mismo tiempo.
+- Establecer qué proceso debe actuar primero.
+- Coordinar el acceso a memoria compartida, ficheros, impresoras u otros recursos.
+
+Un ejemplo sencillo en Java es `waitFor()`:
 
 ```java
 Process proceso = new ProcessBuilder(args).start();
+
 int retorno = proceso.waitFor();
 
 System.out.println("Código de retorno: " + retorno);
 ```
 
-- El proceso padre queda bloqueado.
-- El hijo continúa hasta finalizar.
-- El padre recibe el código de retorno del hijo.
+En este ejemplo:
+
+1. El proceso padre crea e inicia un proceso hijo.
+2. El padre llama a `waitFor()`.
+3. El proceso padre queda bloqueado hasta que el hijo termina.
+4. Cuando el hijo finaliza, `waitFor()` devuelve su código de retorno.
+5. Por convención, el código `0` indica que el proceso hijo terminó correctamente; un valor distinto de `0` suele indicar un error o una terminación anormal.
 
 ---
 
@@ -628,26 +671,28 @@ Crear los procesos y programar los mecanismos necesarios de comunicación y sinc
 
 ---
 
-#### 💻 Ejemplos
+## 💻 Ejemplos
 
-**Ejemplo 1**: Lanzar Paint y esperar a que termine
+### Ejemplo 1: Lanzar Paint y esperar a que termine
 
 ```java
 public static void main(String[] args) throws IOException {
-		ProcessBuilder pb = new ProcessBuilder("mspaint.exe");
-		Process process = pb.start();
+    ProcessBuilder pb = new ProcessBuilder("mspaint.exe");
+    Process process = pb.start();
 
-		try {
-			process.waitFor();
-			System.out.println("Paint terminó con código de salida: " + process.exitValue());
-		} catch (InterruptedException ex) {
-			System.err.println("Se interrumpió la espera del proceso: " + ex.getMessage());
-			Thread.currentThread().interrupt();
-		}
-	}
+    try {
+        process.waitFor();
+        System.out.println("Paint terminó con código de salida: " + process.exitValue());
+    } catch (InterruptedException ex) {
+        System.err.println("Se interrumpió la espera del proceso: " + ex.getMessage());
+        Thread.currentThread().interrupt();
+    }
+}
 ```
 
-**Ejemplo 2**: Crear un ProcessBuilder vacío y usar command()
+`waitFor()` bloquea el proceso padre hasta que el hijo termina. Después, `exitValue()` devuelve el código de salida del hijo.
+
+### Ejemplo 2: Crear un `ProcessBuilder` vacío y usar `command()`
 
 ```java
 public static void main(String[] args) {
@@ -664,7 +709,9 @@ public static void main(String[] args) {
 }
 ```
 
-**Ejemplo 3**: Obtener el código de salida con waitFor()
+Se puede crear un `ProcessBuilder` vacío y establecer después el comando con `command()`.
+
+### Ejemplo 3: Obtener el código de salida con `waitFor()`
 
 ```java
 public static void main(String[] args) throws IOException {
@@ -681,7 +728,9 @@ public static void main(String[] args) throws IOException {
 }
 ```
 
-**Ejemplo 4**: Esperar, destruir el proceso y obtener su estado
+Por convención, el código `0` indica que el proceso hijo terminó correctamente. Un valor distinto de `0` suele indicar un error o una terminación anormal.
+
+### Ejemplo 4: Esperar, destruir el proceso y obtener su estado
 
 ```java
 public static void main(String[] args) {
@@ -701,6 +750,81 @@ public static void main(String[] args) {
     }
 }
 ```
+
+`destroy()` solicita la terminación del proceso hijo. Como el proceso puede tardar un instante en finalizar, después se llama a `waitFor()` para esperar su finalización y obtener su código de salida.
+
+Si el proceso no responde a `destroy()`, se puede utilizar `destroyForcibly()` para terminarlo de forma forzada.
+
+### Ejemplo 5: Leer la salida estándar del proceso hijo
+
+```java
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class LeerSalidaProceso {
+    public static void main(String[] args) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "dir");
+        Process process = pb.start();
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(process.getInputStream()))) {
+
+            String linea;
+
+            while ((linea = reader.readLine()) != null) {
+                System.out.println(linea);
+            }
+
+            int estado = process.waitFor();
+            System.out.println("El proceso terminó con el código: " + estado);
+
+        } catch (InterruptedException e) {
+            System.err.println("Se interrumpió la espera del proceso.");
+            Thread.currentThread().interrupt();
+        }
+    }
+}
+```
+
+En este ejemplo, el proceso padre lee el `stdout` del proceso hijo mediante `getInputStream()`. Aunque el método se llame `getInputStream()`, representa la salida del hijo porque es la información que el padre recibe como entrada.
+
+### Ejemplo 6: Redirigir la salida del proceso hijo a un fichero
+
+```java
+import java.io.File;
+import java.io.IOException;
+
+public class RedirigirSalida {
+    public static void main(String[] args) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "dir");
+        pb.redirectOutput(new File("salida.txt"));
+
+        Process process = pb.start();
+
+        try {
+            int estado = process.waitFor();
+            System.out.println("El proceso terminó con el código: " + estado);
+        } catch (InterruptedException e) {
+            System.err.println("Se interrumpió la espera del proceso.");
+            Thread.currentThread().interrupt();
+        }
+    }
+}
+```
+
+`redirectOutput()` redirige el `stdout` del proceso hijo al fichero `salida.txt`. De esta forma, la salida normal del comando no aparece en la consola, sino que se guarda en el fichero.
+
+### Resumen
+
+- `ProcessBuilder` permite configurar y lanzar procesos hijos.
+- `start()` crea el proceso y devuelve un objeto `Process`.
+- `waitFor()` bloquea el proceso padre hasta que el hijo termina y devuelve su código de salida.
+- `exitValue()` devuelve el código de salida, pero solo si el proceso ya ha terminado.
+- `destroy()` solicita la terminación del proceso.
+- `destroyForcibly()` termina el proceso de forma forzada.
+- Los métodos `getInputStream()`, `getOutputStream()` y `getErrorStream()` permiten comunicarse con el proceso hijo mediante sus streams estándar.
+- `redirectOutput()`, `redirectError()` y `redirectInput()` permiten redirigir los streams del proceso hijo.
 
 ---
 

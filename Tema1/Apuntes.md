@@ -679,13 +679,13 @@ Todas las versiones realizan la misma tarea: ejecutar Paint, esperar a que el us
 
 La diferencia entre ellas está en cómo se gestionan las excepciones y en cómo se obtiene el código de salida.
 
-### Excepciones que pueden generarse
+#### Excepciones que pueden generarse
 
 El método `start()` de `ProcessBuilder` puede lanzar una `IOException`. Esta excepción se produce, por ejemplo, cuando el sistema no puede encontrar o ejecutar el programa indicado.
 
 El método `waitFor()` de `Process` puede lanzar una `InterruptedException`. Esta excepción se produce si el hilo que está esperando a que termine el proceso hijo es interrumpido.
 
-### Versión 1: sin `try-catch`
+**Versión 1**: sin `try-catch`
 
 En esta versión, el método `main` no captura las excepciones. En su lugar, las declara con `throws` para que las gestione quien llame al método.
 
@@ -704,7 +704,7 @@ public static void main(String[] args) throws IOException, InterruptedException 
 
 Si ocurre una `IOException` o una `InterruptedException`, el programa se detiene y muestra el error. Es la versión más sencilla, pero no permite controlar qué hacer cuando falla la ejecución o la espera.
 
-### Versión 2: capturando solo `InterruptedException`
+**Versión 2**: capturando solo `InterruptedException`
 
 En esta versión se captura la excepción que puede lanzar `waitFor()`. La `IOException` sigue declarándose con `throws`.
 
@@ -729,7 +729,7 @@ public static void main(String[] args) throws IOException {
 
 Cuando se captura una `InterruptedException`, es buena práctica restaurar el estado de interrupción del hilo con `Thread.currentThread().interrupt()`. Así no se pierde la información de que otro hilo solicitó la interrupción.
 
-### Versión 3: capturando `IOException` y `InterruptedException`
+**Versión 3**: capturando `IOException` y `InterruptedException`
 
 Esta versión captura las dos excepciones que pueden producirse: la que puede lanzar `start()` y la que puede lanzar `waitFor()`.
 
@@ -759,7 +759,7 @@ public static void main(String[] args) {
 
 Esta es la versión más completa para un programa sencillo, porque distingue dos situaciones diferentes: un fallo al intentar ejecutar el proceso y una interrupción mientras se espera a que termine.
 
-### Diferencia entre `waitFor()` y `exitValue()`
+**Diferencia** entre `waitFor()` y `exitValue()`
 
 El método `waitFor()` bloquea el proceso padre hasta que el proceso hijo termina. Además, devuelve directamente el código de salida del hijo.
 
@@ -781,7 +781,7 @@ System.out.println("El proceso terminó con el código: " + codigo);
 
 Por tanto, la forma más directa es utilizar el valor devuelto por `waitFor()`. La forma con `exitValue()` también es correcta, pero solo después de haber llamado a `waitFor()` o cuando se sabe con seguridad que el proceso ya ha finalizado.
 
-### Ejemplo comparativo
+**Ejemplo comparativo**
 
 ```java
 public static void main(String[] args) {

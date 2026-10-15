@@ -675,62 +675,171 @@ Crear los procesos y programar los mecanismos necesarios de comunicación y sinc
 
 ### Ejemplo 1: Lanzar Paint y esperar a que termine
 
+Todas las versiones realizan la misma tarea: ejecutar Paint, esperar a que el usuario lo cierre y mostrar el código con el que ha terminado.
+
+La diferencia entre ellas está en cómo se gestionan las excepciones y en cómo se obtiene el código de salida.
+
+### Excepciones que pueden generarse
+
+El método `start()` de `ProcessBuilder` puede lanzar una `IOException`. Esta excepción se produce, por ejemplo, cuando el sistema no puede encontrar o ejecutar el programa indicado.
+
+El método `waitFor()` de `Process` puede lanzar una `InterruptedException`. Esta excepción se produce si el hilo que está esperando a que termine el proceso hijo es interrumpido.
+
+### Versión 1: sin `try-catch`
+
+En esta versión, el método `main` no captura las excepciones. En su lugar, las declara con `throws` para que las gestione quien llame al método.
+
+```java
+public static void main(String[] args) throws IOException, InterruptedException {
+    ProcessBuilder pb = new ProcessBuilder("mspaint.exe");
+    Process proceso = pb.start();
+
+    System.out.println("Paint abierto. Esperando a que se cierre...");
+
+    int codigo = proceso.waitFor();
+
+    System.out.println("Terminó con código: " + codigo);
+}
+```
+
+Si ocurre una `IOException` o una `InterruptedException`, el programa se detiene y muestra el error. Es la versión más sencilla, pero no permite controlar qué hacer cuando falla la ejecución o la espera.
+
+### Versión 2: capturando solo `InterruptedException`
+
+En esta versión se captura la excepción que puede lanzar `waitFor()`. La `IOException` sigue declarándose con `throws`.
+
 ```java
 public static void main(String[] args) throws IOException {
     ProcessBuilder pb = new ProcessBuilder("mspaint.exe");
-    Process process = pb.start();
+    Process proceso = pb.start();
 
     try {
-        process.waitFor();
-        System.out.println("Paint terminó con código de salida: " + process.exitValue());
+        System.out.println("Paint abierto. Esperando a que se cierre...");
+
+        int codigo = proceso.waitFor();
+
+        System.out.println("Terminó con código: " + codigo);
+
     } catch (InterruptedException ex) {
-        System.err.println("Se interrumpió la espera del proceso: " + ex.getMessage());
+        System.err.println("La espera del proceso fue interrumpida: " + ex.getMessage());
         Thread.currentThread().interrupt();
     }
 }
 ```
 
-`waitFor()` bloquea el proceso padre hasta que el hijo termina. Después, `exitValue()` devuelve el código de salida del hijo.
+Cuando se captura una `InterruptedException`, es buena práctica restaurar el estado de interrupción del hilo con `Thread.currentThread().interrupt()`. Así no se pierde la información de que otro hilo solicitó la interrupción.
 
-### Ejemplo 2: Crear un `ProcessBuilder` vacío y usar `command()`
+### Versión 3: capturando `IOException` y `InterruptedException`
+
+Esta versión captura las dos excepciones que pueden producirse: la que puede lanzar `start()` y la que puede lanzar `waitFor()`.
+
+```java
+public static void main(String[] args) {
+    ProcessBuilder pb = new ProcessBuilder("mspaint.exe");
+    Process proceso = null;
+
+    try {
+        proceso = pb.start();
+
+        System.out.println("Paint abierto. Esperando a que se cierre...");
+
+        int codigo = proceso.waitFor();
+
+        System.out.println("Terminó con código: " + codigo);
+
+    } catch (IOException ex) {
+        System.err.println("Error al iniciar el proceso: " + ex.getMessage());
+
+    } catch (InterruptedException ex) {
+        System.err.println("La espera del proceso fue interrumpida: " + ex.getMessage());
+        Thread.currentThread().interrupt();
+    }
+}
+```
+
+Esta es la versión más completa para un programa sencillo, porque distingue dos situaciones diferentes: un fallo al intentar ejecutar el proceso y una interrupción mientras se espera a que termine.
+
+### Diferencia entre `waitFor()` y `exitValue()`
+
+El método `waitFor()` bloquea el proceso padre hasta que el proceso hijo termina. Además, devuelve directamente el código de salida del hijo.
+
+```java
+int codigo = proceso.waitFor();
+
+System.out.println("El proceso terminó con el código: " + codigo);
+```
+
+El método `exitValue()` también devuelve el código de salida, pero solo puede utilizarse cuando el proceso ya ha terminado. Si se llama mientras el proceso sigue en ejecución, lanza una `IllegalThreadStateException`.
+
+```java
+proceso.waitFor();
+
+int codigo = proceso.exitValue();
+
+System.out.println("El proceso terminó con el código: " + codigo);
+```
+
+Por tanto, la forma más directa es utilizar el valor devuelto por `waitFor()`. La forma con `exitValue()` también es correcta, pero solo después de haber llamado a `waitFor()` o cuando se sabe con seguridad que el proceso ya ha finalizado.
+
+### Ejemplo comparativo
+
+```java
+public static void main(String[] args) {
+    ProcessBuilder pb = new ProcessBuilder("mspaint.exe");
+    Process proceso = null;
+
+    try {
+        proceso = pb.start();
+
+        System.out.println("Esperando a que se cierre Paint...");
+
+        int codigoConWaitFor = proceso.waitFor();
+
+        int codigoConExitValue = proceso.exitValue();
+
+        System.out.println("Código obtenido con waitFor(): " + codigoConWaitFor);
+        System.out.println("Código obtenido con exitValue(): " + codigoConExitValue);
+
+    } catch (IOException ex) {
+        System.err.println("No se pudo iniciar el proceso: " + ex.getMessage());
+
+    } catch (InterruptedException ex) {
+        System.err.println("La espera fue interrumpida.");
+        Thread.currentThread().interrupt();
+    }
+}
+```
+
+En este ejemplo, `waitFor()` espera a que Paint se cierre y devuelve su código de salida. Después, `exitValue()` consulta ese mismo código, ya que el proceso ha terminado.
+
+### Ejemplo 2: Mismo programa, pero crear un `ProcessBuilder` vacío y usar `command()`
 
 ```java
 public static void main(String[] args) {
     ProcessBuilder pb = new ProcessBuilder();
     pb.command("mspaint.exe");
+    Process proceso = null;
 
     try {
-        Process process = pb.start();
-        // Opcional: process.destroy();
-    } catch (IOException e) {
-        System.out.println("Error ejecutando el hijo");
-        System.out.println("Descripción: " + e.getMessage());
-    }
-}
-```
+        proceso = pb.start();
 
-Se puede crear un `ProcessBuilder` vacío y establecer después el comando con `command()`.
+        System.out.println("Esperando a que se cierre Paint...");
 
-### Ejemplo 3: Obtener el código de salida con `waitFor()`
+        int codigo = proceso.waitFor();
 
-```java
-public static void main(String[] args) throws IOException {
-    ProcessBuilder pb = new ProcessBuilder("mspaint.exe");
-    Process process = pb.start();
+        System.out.println("El proceso terminó con el código: " + codigo);
 
-    try {
-        int estado = process.waitFor();
-        System.out.println("Estado del hijo: " + estado);
+    } catch (IOException ex) {
+        System.err.println("No se pudo iniciar el proceso: " + ex.getMessage());
+
     } catch (InterruptedException ex) {
-        System.err.println("Se interrumpió la espera del proceso: " + ex.getMessage());
+        System.err.println("La espera fue interrumpida.");
         Thread.currentThread().interrupt();
     }
 }
 ```
 
-Por convención, el código `0` indica que el proceso hijo terminó correctamente. Un valor distinto de `0` suele indicar un error o una terminación anormal.
-
-### Ejemplo 4: Esperar, destruir el proceso y obtener su estado
+### Ejemplo 3: Esperar, destruir el proceso y obtener su estado
 
 ```java
 public static void main(String[] args) {
@@ -755,7 +864,7 @@ public static void main(String[] args) {
 
 Si el proceso no responde a `destroy()`, se puede utilizar `destroyForcibly()` para terminarlo de forma forzada.
 
-### Ejemplo 5: Leer la salida estándar del proceso hijo
+### Ejemplo 4: Leer la salida estándar del proceso hijo
 
 ```java
 import java.io.BufferedReader;
@@ -789,7 +898,7 @@ public class LeerSalidaProceso {
 
 En este ejemplo, el proceso padre lee el `stdout` del proceso hijo mediante `getInputStream()`. Aunque el método se llame `getInputStream()`, representa la salida del hijo porque es la información que el padre recibe como entrada.
 
-### Ejemplo 6: Redirigir la salida del proceso hijo a un fichero
+### Ejemplo 5: Redirigir la salida del proceso hijo a un fichero
 
 ```java
 import java.io.File;

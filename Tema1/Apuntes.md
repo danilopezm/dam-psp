@@ -685,7 +685,7 @@ El método `start()` de `ProcessBuilder` puede lanzar una `IOException`. Esta ex
 
 El método `waitFor()` de `Process` puede lanzar una `InterruptedException`. Esta excepción se produce si el hilo que está esperando a que termine el proceso hijo es interrumpido.
 
-**Versión 1**: sin `try-catch`
+#### Versión 1: sin `try-catch`
 
 En esta versión, el método `main` no captura las excepciones. En su lugar, las declara con `throws` para que las gestione quien llame al método.
 
@@ -704,7 +704,7 @@ public static void main(String[] args) throws IOException, InterruptedException 
 
 Si ocurre una `IOException` o una `InterruptedException`, el programa se detiene y muestra el error. Es la versión más sencilla, pero no permite controlar qué hacer cuando falla la ejecución o la espera.
 
-**Versión 2**: capturando solo `InterruptedException`
+#### Versión 2: capturando solo `InterruptedException`
 
 En esta versión se captura la excepción que puede lanzar `waitFor()`. La `IOException` sigue declarándose con `throws`.
 
@@ -729,7 +729,7 @@ public static void main(String[] args) throws IOException {
 
 Cuando se captura una `InterruptedException`, es buena práctica restaurar el estado de interrupción del hilo con `Thread.currentThread().interrupt()`. Así no se pierde la información de que otro hilo solicitó la interrupción.
 
-**Versión 3**: capturando `IOException` y `InterruptedException`
+#### Versión 3: capturando `IOException` y `InterruptedException`
 
 Esta versión captura las dos excepciones que pueden producirse: la que puede lanzar `start()` y la que puede lanzar `waitFor()`.
 
@@ -759,7 +759,7 @@ public static void main(String[] args) {
 
 Esta es la versión más completa para un programa sencillo, porque distingue dos situaciones diferentes: un fallo al intentar ejecutar el proceso y una interrupción mientras se espera a que termine.
 
-**Diferencia** entre `waitFor()` y `exitValue()`
+#### Diferencia entre `waitFor()` y `exitValue()`
 
 El método `waitFor()` bloquea el proceso padre hasta que el proceso hijo termina. Además, devuelve directamente el código de salida del hijo.
 
@@ -781,7 +781,7 @@ System.out.println("El proceso terminó con el código: " + codigo);
 
 Por tanto, la forma más directa es utilizar el valor devuelto por `waitFor()`. La forma con `exitValue()` también es correcta, pero solo después de haber llamado a `waitFor()` o cuando se sabe con seguridad que el proceso ya ha finalizado.
 
-**Ejemplo comparativo**
+#### Ejemplo comparativo
 
 ```java
 public static void main(String[] args) {
@@ -811,6 +811,8 @@ public static void main(String[] args) {
 ```
 
 En este ejemplo, `waitFor()` espera a que Paint se cierre y devuelve su código de salida. Después, `exitValue()` consulta ese mismo código, ya que el proceso ha terminado.
+
+<br>
 
 ### Ejemplo 2: Mismo programa, pero crear un `ProcessBuilder` vacío y usar `command()`
 
@@ -845,24 +847,38 @@ public static void main(String[] args) {
 public static void main(String[] args) {
     ProcessBuilder pb = new ProcessBuilder();
     pb.command("mspaint.exe");
+    Process proceso = null;
 
     try {
-        Process process = pb.start();
-        Thread.sleep(2000);
-        process.destroy();
+        proceso = pb.start();
 
-        int estado = process.waitFor();
-        System.out.println("Estado del hijo: " + estado);
-    } catch (Exception e) {
-        System.out.println("Error ejecutando el hijo");
-        System.out.println("Descripción: " + e.getMessage());
+        System.out.println("Esperando 2 segundos antes de cerrar Paint...");
+        Thread.sleep(2000);
+
+        System.out.println("Solicitando el cierre de Paint...");
+        proceso.destroy();
+
+        int codigo = proceso.waitFor();
+
+        System.out.println("El proceso terminó con el código: " + codigo);
+
+    } catch (IOException ex) {
+        System.err.println("No se pudo iniciar el proceso: " + ex.getMessage());
+
+    } catch (InterruptedException ex) {
+        System.err.println("La espera fue interrumpida.");
+        Thread.currentThread().interrupt();
     }
 }
 ```
 
-`destroy()` solicita la terminación del proceso hijo. Como el proceso puede tardar un instante en finalizar, después se llama a `waitFor()` para esperar su finalización y obtener su código de salida.
+### Orden de ejecución: `sleep()` → `destroy()` → `waitFor()`
 
-Si el proceso no responde a `destroy()`, se puede utilizar `destroyForcibly()` para terminarlo de forma forzada.
+1. `Thread.sleep(2000)`: el hilo principal de Java espera aproximadamente 2 segundos, mientras Paint sigue ejecutándose.
+2. `proceso.destroy()`: transcurrida la pausa, Java solicita la terminación de Paint.
+3. `proceso.waitFor()`: Java espera a que Paint termine realmente y obtiene su código de salida. Esta espera es necesaria porque `destroy()` no garantiza que el proceso termine inmediatamente.
+
+Los **2 segundos** son la espera antes de solicitar el cierre, no el tiempo máximo que puede durar el proceso. Si Paint no termina tras `destroy()`, `waitFor()` puede quedarse esperando indefinidamente.
 
 ### Ejemplo 4: Leer la salida estándar del proceso hijo
 

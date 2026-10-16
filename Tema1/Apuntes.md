@@ -841,6 +841,8 @@ public static void main(String[] args) {
 }
 ```
 
+<br>
+
 ### Ejemplo 3: Esperar, destruir el proceso y obtener su estado
 
 ```java
@@ -872,7 +874,7 @@ public static void main(String[] args) {
 }
 ```
 
-### Orden de ejecución: `sleep()` → `destroy()` → `waitFor()`
+#### Orden de ejecución: `sleep()` → `destroy()` → `waitFor()`
 
 1. `Thread.sleep(2000)`: el hilo principal de Java espera aproximadamente 2 segundos, mientras Paint sigue ejecutándose.
 2. `proceso.destroy()`: transcurrida la pausa, Java solicita la terminación de Paint.
@@ -880,39 +882,93 @@ public static void main(String[] args) {
 
 Los **2 segundos** son la espera antes de solicitar el cierre, no el tiempo máximo que puede durar el proceso. Si Paint no termina tras `destroy()`, `waitFor()` puede quedarse esperando indefinidamente.
 
-### Ejemplo 4: Leer la salida estándar del proceso hijo
+<br>
+
+### Ejemplo 4: Leer texto con BufferedReader y aplicarlo a un proceso hijo
+
+#### 1. Leer una línea del teclado
 
 ```java
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+public static void main(String[] args) {
+    try (BufferedReader lector = new BufferedReader(
+            new InputStreamReader(System.in))) {
 
-public class LeerSalidaProceso {
-    public static void main(String[] args) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "dir");
-        Process process = pb.start();
+        System.out.print("Escribe tu nombre: ");
 
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(process.getInputStream()))) {
+        String nombre = lector.readLine();
 
-            String linea;
+        System.out.println("Hola, " + nombre);
 
-            while ((linea = reader.readLine()) != null) {
-                System.out.println(linea);
-            }
-
-            int estado = process.waitFor();
-            System.out.println("El proceso terminó con el código: " + estado);
-
-        } catch (InterruptedException e) {
-            System.err.println("Se interrumpió la espera del proceso.");
-            Thread.currentThread().interrupt();
-        }
+    } catch (IOException ex) {
+        System.err.println("Error al leer: " + ex.getMessage());
     }
 }
 ```
 
-En este ejemplo, el proceso padre lee el `stdout` del proceso hijo mediante `getInputStream()`. Aunque el método se llame `getInputStream()`, representa la salida del hijo porque es la información que el padre recibe como entrada.
+El lector se construye combinando tres elementos:
+
+- `System.in`: proporciona la entrada estándar, normalmente el teclado.
+- `InputStreamReader`: convierte los bytes recibidos en caracteres.
+- `BufferedReader`: permite leer el texto por líneas.
+
+La instrucción `lector.readLine()` lee una línea y la guarda en `nombre`. Después, el programa muestra el saludo.
+
+El `try` con recursos cierra automáticamente el lector al salir del bloque. En este caso, también cierra `System.in`, por lo que no debe utilizarse después para seguir leyendo del teclado.
+
+#### 2. Leer la salida estándar de un proceso hijo
+
+```java
+public static void main(String[] args) {
+    ProcessBuilder pb = new ProcessBuilder();
+    pb.command("cmd.exe", "/c", "dir");
+    Process proceso = null;
+
+    try {
+        proceso = pb.start();
+
+        try (BufferedReader lector = new BufferedReader(
+                new InputStreamReader(proceso.getInputStream()))) {
+
+            String linea;
+
+            while ((linea = lector.readLine()) != null) {
+                System.out.println(linea);
+            }
+        }
+
+        int codigo = proceso.waitFor();
+
+        System.out.println("El proceso terminó con el código: " + codigo);
+
+    } catch (IOException ex) {
+        System.err.println(
+                "Error al iniciar el proceso o leer su salida: "
+                + ex.getMessage());
+
+    } catch (InterruptedException ex) {
+        System.err.println("La espera fue interrumpida.");
+        Thread.currentThread().interrupt();
+    }
+}
+```
+
+La estructura del lector es la misma que en el ejemplo anterior. Solo cambia el **origen** de los datos: en lugar de `System.in`, utilizamos `proceso.getInputStream()`.
+
+Este método permite recibir la salida estándar del hijo. Aunque se llame `getInputStream()`, representa la salida del hijo porque es la información que el padre recibe como entrada.
+
+El proceso puede generar varias líneas, por lo que utilizamos un bucle:
+
+```java
+while ((linea = lector.readLine()) != null) {
+    System.out.println(linea);
+}
+```
+
+En cada repetición se lee una línea, se guarda en `linea` y se muestra. El bucle termina cuando `readLine()` devuelve `null`, indicando que se ha alcanzado el final del flujo.
+
+Después, `waitFor()` espera a que el proceso termine, si todavía no lo ha hecho, y obtiene su código de salida. Se lee antes la salida para evitar que el hijo se bloquee si se llena el espacio disponible para almacenarla.
+
+<br>
 
 ### Ejemplo 5: Redirigir la salida del proceso hijo a un fichero
 
